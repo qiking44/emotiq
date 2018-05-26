@@ -61,12 +61,15 @@
                          (* j 8))))
         finally (return integer-value)))
 
-;; Efficiency note: with the above integer-value always in practice becomes a
-;; bignum. Were this used for large octet vectors, this would ephemerally cons
-;; up the proverbial wazoo. Are all compilers these days are "sufficiently
-;; smart" about handling that?  Maybe not, but it fortunately doesn't matter in
-;; this case, since this here exclusively used for fixed-length, relatively
-;; small, byte vectors. -mhd, 5/26/18
+;; Efficiency note: in the above integer-value always in practice becomes a
+;; bignum. Were this to be used for large octet vectors, this would ephemerally
+;; cons up the proverbial wazoo. Are all compilers these days "sufficiently
+;; smart" about handling that much ephemeral consing?  Maybe not. But it
+;; fortunately doesn't matter in this case, since this here exclusively used for
+;; fixed-length, relatively small, byte vectors, and not high-rate,
+;; speed-critical situations. -mhd, 5/26/18
+
+
 
 (defun b58 (octet-vector)
   (loop with x = (octet-vector-to-integer-value octet-vector)
