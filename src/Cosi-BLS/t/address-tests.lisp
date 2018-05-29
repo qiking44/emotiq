@@ -15,16 +15,19 @@
          (should-be-testnet-address
            "ytqFwmfg1HDu5kRm9Czy38M6mnr45QaA3L"))
     (print "Public Key to Key Hash as Address Test (Base58Check Encoding)")
-    (assert-equal 
+    (assert-equal
      should-be-bitcoin-address 
      (public-key-to-address
-      public-key-byte-vector :override-version bitcoin-version))
+      public-key-byte-vector :override-version bitcoin-version)
+     'should-be-bitcoin-address)
     (assert-equal 
      should-be-mainnet-address
-     (public-key-to-address public-key-byte-vector :net :main))
+     (public-key-to-address public-key-byte-vector :net :main)
+     'should-be-mainnet-address)
     (assert-equal 
      should-be-testnet-address
-     (public-key-to-address public-key-byte-vector :net :test))))
+     (public-key-to-address public-key-byte-vector :net :test)
+     'should-be-testnet-address)))
 
 
 ;; Test notes: it may be helpful to test individual components of the

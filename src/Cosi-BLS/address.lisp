@@ -85,63 +85,7 @@
 
 
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-
-(defparameter *base-58-alphabet-string*
-  (coerce 
-   "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz" 'simple-string)
-  "A simple string mapping integers 0 to 57 to their correspesponding base-58
-  characters.")
-
-)
-
-
-(defmacro map-to-base58-char (octet)
-  "Map OCTET, an integer between 0 and 57 inclusive, to its corresponding
-   character in Base 58."
-  `(schar *base-58-alphabet-string* ,octet))
-
-
-
-
-(defun octet-vector-to-integer-value (octet-vector)
-  (loop with integer-value = 0
-        for i fixnum from (1- (length octet-vector)) downto 0
-        as j fixnum from 0
-        do (setq integer-value
-                 (+ integer-value 
-                    (ash (aref octet-vector i)
-                         (* j 8))))
-        finally (return integer-value)))
-
-;; Efficiency note: in the above integer-value always in practice becomes a
-;; bignum. Were this to be used for large octet vectors, this would ephemerally
-;; cons up the proverbial wazoo. Here it's OK, used for shortish byte vectors,
-;; but it would be unacceptable for longer vectors with lengths in the tens of
-;; thousands.
-
-
-
-(defun b58 (octet-vector)
-  "Encode OCTET-VECTOR, a byte vector, in base 58, returning a string."
-  (loop with x = (octet-vector-to-integer-value octet-vector)
-        with remainder
-        with n-leading-null-bytes
-          = (loop for i from 0 below (length octet-vector)
-                  while (zerop (aref octet-vector i))
-                  count t)
-        with string-outstream = (make-string-output-stream)
-        while (> x 0)
-        do (multiple-value-setq (x remainder) (floor x 58))
-           (write-char (map-to-base58-char remainder) string-outstream)
-        finally
-           (loop repeat n-leading-null-bytes
-                 do (write-char (map-to-base58-char 0) string-outstream))
-           (return
-             (nreverse
-              (get-output-stream-string string-outstream)))))
-
-
+;; (defvar *what-to-b58 nil)
 
 (defun encode-address (hash160 version-octet)
   "Takes HASH160, a 20 byte RIPEMD160 hash of a public key, and a version octet,
@@ -154,7 +98,8 @@
          ;; tack that checksum onto the end of the prefix+data
          (prefix+data+checksum
            (concatenate 'ub8-vector prefix+data checksum-vec)))
-    (b58 prefix+data+checksum)))
+    ;; (setq *what-to-b58 prefix+data+checksum)
+    (vec-repr:base58-str prefix+data+checksum)))
 
 
 
