@@ -85,8 +85,6 @@
 
 
 
-;; (defvar *what-to-b58 nil)
-
 (defun encode-address (hash160 version-octet)
   "Takes HASH160, a 20 byte RIPEMD160 hash of a public key, and a version octet,
   returns a corresponding string in Bitcoin address Base58check format."
@@ -98,7 +96,6 @@
          ;; tack that checksum onto the end of the prefix+data
          (prefix+data+checksum
            (concatenate 'ub8-vector prefix+data checksum-vec)))
-    ;; (setq *what-to-b58 prefix+data+checksum)
     (vec-repr:base58-str prefix+data+checksum)))
 
 
